@@ -94,7 +94,7 @@ def save_annotations(name, image, detections, class_names):
     """
     Files saved with image_name.txt and relative coordinates
     """
-    file_name = name.split(".")[:-1][0] + ".txt"
+    file_name = name.rsplit(".",1)[0] + ".txt"
     with open(file_name, "w") as f:
         for label, confidence, bbox in detections:
             x, y, w, h = convert2relative(image, bbox)
