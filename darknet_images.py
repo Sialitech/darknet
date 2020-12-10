@@ -118,10 +118,10 @@ def image_detection(image_path, network, class_names, class_colors, thresh):
 
 def batch_detection(network, images, class_names, class_colors,
                     thresh=0.25, hier_thresh=.5, nms=.45, batch_size=4):
-    image_height, image_width, _ = check_batch_shape(images, batch_size)
+    # image_height, image_width, _ = check_batch_shape(images, batch_size)
     darknet_images = prepare_batch(images, network)
-    batch_detections = darknet.network_predict_batch(network, darknet_images, batch_size, image_width,
-                                                     image_height, thresh, hier_thresh, None, 0, 0)
+    batch_detections = darknet.network_predict_batch(network, darknet_images, batch_size, darknet.network_width(network),
+                                                     darknet.network_height(network), thresh, hier_thresh, None, 0, 0)
     batch_predictions = []
     for idx in range(batch_size):
         num = batch_detections[idx].num
