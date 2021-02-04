@@ -1,0 +1,14 @@
+version: '2.3'
+
+services:
+    yolo_api:
+      build:
+        context: .
+      runtime: nvidia
+      environment:
+        - NVIDIA_VISIBLE_DEVICES=all
+        - PYTHONUNBUFFERED=0
+        - DISPLAY=unix$DISPLAY
+        - QT_X11_NO_MITSHM=1
+        - LOGLEVEL=DEBUG
+      stdin_open: true
