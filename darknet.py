@@ -139,6 +139,34 @@ def draw_boxes(detections, image, colors):
     return image
 
 
+def beautiful_bboxes(detections, image, colors):
+    import cv2
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    font_scale = 1.0
+    thickness = 3
+
+    for label, confidence, bbox in detections:      
+        text_size = cv2.getTextSize(
+            label.rstrip(), font, font_scale, thickness
+        )
+        (text_width, text_height) = text_size[0]
+
+        xmin, ymin, xmax, ymax = bbox2points(bbox)
+        cv2.rectangle(image, left, ymin, xmax, ymax, colors[label], thickness)
+
+        if (ymin - text_height - 9) < 0:
+            p1 = (xmin - 1, ymin)
+            p2 = (xmin + text_width, ymin + text_height + 9)
+            ptext = (xmin, ymin + text_height + 3)
+        else:
+            p1 = (xmin - 1, ymin - text_height - 9)
+            p2 = (xmin + text_width, ymin)
+            ptext = (xmin, ymin - 3)
+        cv2.rectangle(image, p1, p2, colors[label], cv2.FILLED)
+        cv2.putText(image, ptext, classes[labelId].rstrip(), font, font_scale, (0, 0, 0))
+    return image
+
+
 def decode_detection(detections):
     decoded = []
     for label, confidence, bbox in detections:

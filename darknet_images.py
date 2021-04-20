@@ -112,7 +112,7 @@ def image_detection(image_path, network, class_names, class_colors, thresh):
     darknet.copy_image_from_bytes(darknet_image, image_resized.tobytes())
     detections = darknet.detect_image(network, class_names, darknet_image, thresh=thresh)
     darknet.free_image(darknet_image)
-    image = darknet.draw_boxes(detections, image_resized, class_colors)
+    image = darknet.beautiful_bboxes(detections, image_resized, class_colors)
     return cv2.cvtColor(image, cv2.COLOR_BGR2RGB), detections
 
 
@@ -129,7 +129,7 @@ def batch_detection(network, images, class_names, class_colors,
         if nms:
             darknet.do_nms_obj(detections, num, len(class_names), nms)
         predictions = darknet.remove_negatives(detections, class_names, num)
-        images[idx] = darknet.draw_boxes(predictions, images[idx], class_colors)
+        images[idx] = darknet.beautiful_bboxes(predictions, images[idx], class_colors)
         batch_predictions.append(predictions)
     darknet.free_batch_detections(batch_detections, batch_size)
     return images, batch_predictions
