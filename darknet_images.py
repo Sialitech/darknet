@@ -112,7 +112,7 @@ def image_detection(image_path, network, class_names, class_colors, thresh):
     darknet.copy_image_from_bytes(darknet_image, image_resized.tobytes())
     detections = darknet.detect_image(network, class_names, darknet_image, thresh=thresh)
     darknet.free_image(darknet_image)
-    image = beautiful_bboxes(detections, image_rgb, class_colors)
+    image = beautiful_bboxes(detections, image_rgb, image_resized, class_colors)
     return cv2.cvtColor(image, cv2.COLOR_BGR2RGB), detections
 
 
@@ -158,6 +158,15 @@ def convert2relative(image, bbox):
     return x/width, y/height, w/width, h/height
 
 
+def convert2abs(image, bbox):
+    """
+    YOLO format use relative coordinates
+    """
+    x, y, w, h = bbox
+    height, width, _ = image.shape
+    return x*width, y*height, w*width, h*height
+
+
 def save_annotations(name, image, detections, class_names):
     """
     Files saved with image_name.txt and relative coordinates
@@ -170,18 +179,21 @@ def save_annotations(name, image, detections, class_names):
             f.write("{} {:.4f} {:.4f} {:.4f} {:.4f} {:.4f}\n".format(label, x, y, w, h, float(confidence)))
 
 
-def beautiful_bboxes(detections, image, colors):
+def beautiful_bboxes(detections, image_original, image_yolo, colors):
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_scale = 1.0
-    thickness = 3
+    thickness = 5
+    alpha = .5
+    image = image_original.copy()
 
     for label, confidence, bbox in detections:      
         text_size = cv2.getTextSize(
-            label.rstrip(), font, font_scale, thickness
+            label, font, font_scale, thickness
         )
         (text_width, text_height) = text_size[0]
 
-        bbox = convert2relative(image, bbox)
+        bbox = convert2relative(image_yolo, bbox)
+        bbox = convert2abs(image, bbox)
         xmin, ymin, xmax, ymax = darknet.bbox2points(bbox)
         cv2.rectangle(image, (xmin, ymin), (xmax, ymax), colors[label], thickness)
 
@@ -194,8 +206,9 @@ def beautiful_bboxes(detections, image, colors):
             p2 = (xmin + text_width, ymin)
             ptext = (xmin, ymin - 3)
         cv2.rectangle(image, p1, p2, colors[label], cv2.FILLED)
-        cv2.putText(image, ptext, label.rstrip(), font, font_scale, (0, 0, 0))
-    return image
+        cv2.putText(image, label, ptext, font, font_scale, (0, 0, 0))
+        cv2.addWeighted(image, alpha, image_original, 1 - alpha, 0, image_original)
+    return image_original
 
 
 def batch_detection_example():
