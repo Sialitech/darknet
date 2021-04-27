@@ -182,7 +182,7 @@ def beautiful_bboxes(detections, image, colors):
         (text_width, text_height) = text_size[0]
 
         bbox = convert2relative(image, bbox)
-        xmin, ymin, xmax, ymax = bbox2points(bbox)
+        xmin, ymin, xmax, ymax = darknet.bbox2points(bbox)
         cv2.rectangle(image, (xmin, ymin), (xmax, ymax), colors[label], thickness)
 
         if (ymin - text_height - 9) < 0:
