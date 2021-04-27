@@ -129,7 +129,7 @@ def batch_detection(network, images, class_names, class_colors,
         if nms:
             darknet.do_nms_obj(detections, num, len(class_names), nms)
         predictions = darknet.remove_negatives(detections, class_names, num)
-        images[idx] = beautiful_bboxes(predictions, images[idx], class_colors)
+        images[idx] = darknet.draw_boxes(predictions, images[idx], class_colors)
         batch_predictions.append(predictions)
     darknet.free_batch_detections(batch_detections, batch_size)
     return images, batch_predictions
