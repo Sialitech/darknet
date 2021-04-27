@@ -194,7 +194,7 @@ def beautiful_bboxes(detections, image, colors):
             p2 = (xmin + text_width, ymin)
             ptext = (xmin, ymin - 3)
         cv2.rectangle(image, p1, p2, colors[label], cv2.FILLED)
-        cv2.putText(image, ptext, classes[labelId].rstrip(), font, font_scale, (0, 0, 0))
+        cv2.putText(image, ptext, label.rstrip(), font, font_scale, (0, 0, 0))
     return image
 
 
