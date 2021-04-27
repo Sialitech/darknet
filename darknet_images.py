@@ -183,7 +183,7 @@ def beautiful_bboxes(detections, image, colors):
 
         bbox = convert2relative(image, bbox)
         xmin, ymin, xmax, ymax = bbox2points(bbox)
-        cv2.rectangle(image, ymin, xmax, ymax, colors[label], thickness)
+        cv2.rectangle(image, (xmin, ymin), (xmax, ymax), colors[label], thickness)
 
         if (ymin - text_height - 9) < 0:
             p1 = (xmin - 1, ymin)
